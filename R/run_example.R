@@ -3,19 +3,18 @@
 # v 07.20.2019
 
 # Import data
-muts_example <- read.delim("../data/example_muts_96.txt", stringsAsFactors = F, header=T, row.names=1) 
+muts_example <- read.delim("../data/example_muts_96.txt", stringsAsFactors = F, header=T, row.names = 1) 
 
 # Import signature reference
-sig_ref <- read.delim("../data/mm_signature_definitions.txt", stringsAsFactors = F, header=T, row.names=1) 
+sig_ref <- read.delim("../data/mm_signature_definitions.txt", stringsAsFactors = F, header=T) 
 
 # Source functions
 source("util/mmSig.R")
 
 sig_out <- mm_fit_signatures(muts.input=muts_example, 
                              sig.input=sig_ref,
-                             out.file=NULL, 
+                             out.file = NULL,
                              sample.sigt.profs=NULL, 
-                             dbg=FALSE,
-                             return.fig = TRUE) 
+                             dbg=FALSE) 
 
 plot_signatures(sig_out)
