@@ -1,6 +1,30 @@
-library("seqinr")                # comp()
-library("MutationalPatterns")    # cos_sim_matrix()
+library(seqinr)                # comp()
+library(MutationalPatterns)    # cos_sim_matrix()
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(RColorBrewer)
 
+rotatedAxisElementText = function(angle,position='x'){
+    angle     = angle[1]; 
+    position  = position[1]
+    positions = list(x=0,y=90,top=180,right=270)
+    if(!position %in% names(positions))
+        stop(sprintf("'position' must be one of [%s]",paste(names(positions),collapse=", ")),call.=FALSE)
+    if(!is.numeric(angle))
+        stop("'angle' must be numeric",call.=FALSE)
+    rads  = (angle - positions[[ position ]])*pi/180
+    hjust = 0.5*(1 - sin(rads))
+    vjust = 0.5*(1 + cos(rads))
+    element_text(angle=angle,vjust=vjust,hjust=hjust)
+}
+
+scale_fill_sigs <- function(...){
+    ggplot2:::manual_scale('fill', 
+                           values = setNames(c(RColorBrewer::brewer.pal(8, "Dark2")),
+                                             c("SBS1", "SBS2", "SBS5", "SBS8", "SBS9", "SBS13", "SBS18", "SBS-MM1")), 
+                           ...)
+}
 
 plot_signatures = function(sig, filename = NULL){
   "
@@ -113,28 +137,29 @@ mm_fit_signatures = function(muts.input="../data/example_muts_96.txt",
   rownames(consigts.defn)<-mutlist
   
   # Process sample mutational profiles
-  samples.muts <- samples.muts[,-which(colnames(samples.muts)=="Total")]             # remove the totals column
+  samples.muts <- samples.muts[names(samples.muts) != "Total"]                       # remove the totals column
   samples.muts <- samples.muts[1:96,]                                                # remove additional rows (e.g. "Total)"
   samples <- colnames(samples.muts)
-  sample.sigt.profs  = NULL
 
   # Assign which signatures to fit to each sample
-  if (is.null(sample.sigt.profs)) {
-    spit(dbg, "using prior multiple myeloma signature profiles")
-    mm.sigts <- (c("SBS1","SBS2","SBS5","SBS8","SBS9",
-                   "SBS13","SBS18","SBS.MM1"))
-    
-    sigt.profs <- list()
-    for (i in 1:length(samples)) {
-      sigt.profs[[samples[i]]] <- mm.sigts
-    }
-  } else if (is.character(sample.sigt.profs)) {
-    library("R.filesets")            # loadRDS()
-    spit(dbg, "using mm signature profiles from file: %s", sample.sigt.profs)
-    sigt.profs <- loadRDS(sample.sigt.profs)
+  if (isTRUE(file.exists(file.path(sample.sigt.profs)))) {                           # workaround to prevent crash if NULL
+      library("R.filesets")            # loadRDS()
+      spit(dbg, "using mm signature profiles from file: %s", sample.sigt.profs)
+      sigt.profs <- loadRDS(sample.sigt.profs)
+      
+  } else if (is.list(sample.sigt.profs)){
+      spit(dbg, "using mm signature profiles from input argument")
+      sigt.profs <- sample.sigt.profs
+          
   } else {
-    spit(dbg, "using mm signature profiles from input argument")
-    sigt.profs <- sample.sigt.profs
+      spit(dbg, "using prior multiple myeloma signature profiles")
+      mm.sigts <- (c("SBS1","SBS2","SBS5","SBS8","SBS9",
+                     "SBS13","SBS18","SBS.MM1"))
+      
+      sigt.profs <- list()
+      for (i in 1:length(samples)) {
+          sigt.profs[[samples[i]]] <- mm.sigts
+      }
   }
   
   # Mutational signature fitting procedure for each infividual sample
@@ -219,4 +244,109 @@ mm_fit_signatures = function(muts.input="../data/example_muts_96.txt",
     figname <- sub("\\.[a-z]{3}$", "_plot.pdf", out.file)
     plot_signatures(sig, filename = figname)
   }
+}
+
+
+
+bootstrap_mm_signatures <- function(muts.input, 
+                                    sig.input,
+                                    sample.sigt.profs=NULL, 
+                                    iterations = 1000){
+    "
+    Bootstrapping function for mm_fit_signatures
+    Draw b = iterations mutational profiles for each sample from its multinomial distribution
+    Performs signature fitting independently for each mutational profile
+    For each mutational signature, returns its relative contribution as point estimate and bootstrapping mean with 95 % CI
+    Can take a sample.sigt.profs argument that is passed directly to mm_fit_signatures. 
+    "
+    # Generate point estimates
+    sig_est <- mm_fit_signatures(muts.input=muts.input, 
+                                 sig.input=sig.input,
+                                 out.file=NULL,
+                                 sample.sigt.profs=sample.sigt.profs, 
+                                 dbg=FALSE)
+    
+    sig_est$sample <- row.names(sig_est)
+    sig_est <- melt(sig_est[names(sig_est) != "mutations"], 
+                    id.vars = "sample", 
+                    variable.name = 'signature', 
+                    value.name = 'estimate')
+    
+    sig_est$signature <- as.character(sig_est$signature)
+    
+    # Setup
+    samples <- names(muts.input)[names(muts.input) != 'Total']
+    classes <- row.names(muts.input)[row.names(muts.input) != 'Total']
+    
+    # List to populate with signatures
+    mutSigs <- list()
+    
+    for(i in 1:length(samples)){
+        # Loop through samples, generating a data frame of signature contributions for each
+        sub <- as.integer(muts.input[classes,i])
+        total <- sum(sub)
+        
+        # sample new 96-classes profiles from the multinomial distribution
+        bootMat <- data.frame(rmultinom(iterations, total, sub/total))
+        row.names(bootMat) <- classes
+        
+        # prepare the signatures to fit for each sample
+        if(is.list(sample.sigt.profs)){
+            sigt.prof <- list()
+            for(s in 1:ncol(bootMat)){
+                sigt.prof[[names(bootMat)[s]]] <- sample.sigt.profs[[samples[i]]]
+            }
+        } else {
+            sigt.prof <- NULL
+        }
+        
+        ### Run mmSig
+        sig_out <- mm_fit_signatures(muts.input=bootMat, 
+                                     sig.input=sig.input,
+                                     out.file = NULL,
+                                     sample.sigt.profs=sigt.prof, 
+                                     dbg=FALSE)
+        
+        mutSigs[[i]] <- sig_out
+    }
+    names(mutSigs) <- samples
+    
+    # Generate final summary data frame
+    
+    ## Summary statistics
+    my_summary <- function(x){
+        c(mean(x), quantile(x, probs = 0.025), quantile(x, probs = 0.975))
+    }
+    
+    mutSigsSummary <- list()
+    for(i in 1:length(mutSigs)){
+        s <- names(mutSigs)[i]
+        temp <- mutSigs[[i]]
+        out <- data.frame(t(sapply(temp[names(temp) != "mutations"], my_summary)))
+        names(out) <- c('mean', 'CI025', 'CI975')
+        out$signature <- row.names(out)
+        out$sample <- s
+        out <- out[c('sample', 'signature', 'mean', 'CI025', 'CI975')]
+        mutSigsSummary[[i]] <- out
+    }
+    
+    mutSigsSummary <- bind_rows(mutSigsSummary)
+    mutSigsSummary <- left_join(mutSigsSummary, sig_est, by = c("sample", "signature"))
+    
+    return(mutSigsSummary)
+}
+
+
+bootSigsPlot <- function(mutSigsSummary){
+    ggplot(mutSigsSummary, aes(signature, estimate, fill = signature))+
+        geom_bar(position="dodge", stat="identity")+
+        geom_errorbar(data = mutSigsSummary, mapping = aes(x = signature, ymin = CI025, ymax = CI975))+
+        facet_grid(~sample)+
+        theme(text = element_text(size = 12),
+              axis.text.x = rotatedAxisElementText(90, 'top'),
+              axis.title.x = element_blank(),
+              strip.background = element_blank(),
+              legend.position = 'none')+
+        scale_fill_sigs()+
+        labs(y = 'Relative contribution')
 }
