@@ -1,0 +1,150 @@
+library(seqinr)                # comp()
+library(MutationalPatterns)    # cos_sim_matrix()
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(RColorBrewer)
+library(tidyr)
+library(BSgenome)
+library(deconstructSigs)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+library(ref_genome, character.only = TRUE)
+
+options(scipen = 999)
+
+
+mm_fit_signatures = function(muts.input, 
+                             sig.input,
+                             input.format = "vcf",
+                             sample.sigt.profs=NULL, 
+                             bootstrap=FALSE,
+                             iterations=1000,
+                             strandbias=FALSE,
+                             dbg=FALSE) {
+    "
+    input.format:
+            vcf: five column vcf-like data frame with the following columns: sample, chr (e.g. chr1), pos, ref, alt.
+            classes: samples as columns and the 96 mutational classes as rows
+    muts.input: mutation input data frame as specified above
+    sig.input: mutational signature reference with mutational classes as rows and signature exposures as columns:
+               Substitution.Type, Trinucleotide, signature.1, ... signature.n
+    sample.sigt.profs: NULL = uses the hard coded signature reference for all samples. 
+                       Optionally provide list with signatures to consider for each sample
+    dbg: FALSE = silent; TRUE = verbose
+    bootstrap:
+    iterations:
+    strandbias:
+    "
+    
+    #####################################################     
+    ########        Read/assign input data       ########
+    #####################################################     
+  
+    # Mutational signature reference
+    consigts.defn <- sig.input
+    
+    # Input mutation data
+    if(input.format == "vcf") {
+        # Input sample data
+        samples.muts <- mut.to.sigs.input(mut.ref = muts.input,
+                                          sample.id = "sample",
+                                          chr = "chr",
+                                          pos = "pos",
+                                          ref = "ref",
+                                          alt = "alt",
+                                          bsg = BSgenome.Hsapiens.UCSC.hg19)
+        samples.muts <- as.data.frame(t(samples.muts))
+        
+    } else if(input.format == "classes"){
+        samples.muts <- muts.input
+    } else{
+        stop("Invalid input format, please provide a vcf-like format ('VCF') or 96 mutational classes ('classes')")
+    }
+
+    # Process signature reference
+    tcons.defn <- t(consigts.defn[,3:ncol(consigts.defn)])
+    mutlist = paste(consigts.defn[,2],paste(substr(consigts.defn[,2],1,1),substr(consigts.defn[,1],3,3),substr(consigts.defn[,2],3,3),sep=""),sep=">")
+    consigts.defn <- sapply(consigts.defn[,3:ncol(consigts.defn)], as.numeric)  #n be cautious in the original the first two columns are included
+    rownames(consigts.defn)<-mutlist
+  
+    # Process sample mutational profiles
+    samples.muts <- samples.muts[names(samples.muts) != "Total"]                       # remove totals column
+    samples.muts <- samples.muts[1:96,]                                                # remove additional rows (e.g. "Total)"
+    samples <- colnames(samples.muts)
+
+    # Assign which signatures to fit to each sample
+    if(is.list(sample.sigt.profs)){
+        spit(dbg, "using mm signature profiles from input argument")
+        sigt.profs <- sample.sigt.profs
+    } else {
+        spit(dbg, "using prior multiple myeloma signature profiles")
+        mm.sigts <- (c("SBS1","SBS2","SBS5","SBS8","SBS9",
+                       "SBS13","SBS18","SBS.MM1"))
+        
+        sigt.profs <- list()
+        for (i in 1:length(samples)) {
+            sigt.profs[[samples[i]]] <- mm.sigts
+        }
+    }
+    
+    # Define output variable
+    output <-list()
+    
+    #####################################################     
+    ########       Fit mutational signatures     ########
+    #####################################################   
+  
+    sigfit <- fit_signatures(samples.muts=samples.muts,
+                             consigts.defn=consigts.defn,
+                             sigt.profs=sigt.profs, 
+                             dbg=dbg)
+    
+    output$estimate <- sigfit
+    
+    #####################################################     
+    ########             Bootstrapping           ########
+    ##################################################### 
+    
+    if(bootstrap){
+        
+        # Point estimates
+        sig_est <- sigfit
+        sig_est$sample <- row.names(sig_est)
+        sig_est <- melt(sig_est[names(sig_est) != "mutations"], 
+                        id.vars = "sample", 
+                        variable.name = 'signature', 
+                        value.name = 'estimate')
+        
+        sig_est$signature <- as.character(sig_est$signature)
+        
+        sigboot <- bootstrap_fit_signatures(samples.muts = samples.muts, 
+                                            consigts.defn = consigts.defn,
+                                            sigt.profs = sigt.profs, 
+                                            iterations = iterations)
+        
+        sigboot <- left_join(sigboot, sig_est, by = c("sample", "signature"))
+        
+        output$bootstrap <- sigboot
+    }
+    
+    #####################################################     
+    ########              Strand Bias            ########
+    ##################################################### 
+    
+    if(strandbias & input.format == "vcf"){
+      
+      strand_bias_out <- getStrandBias(muts.input)
+      
+      output$strand_bias_all_3nt <- strand_bias_out$all_3nt
+      output$strand_bias_mm1 <- strand_bias_out$mm1
+        
+    } else if(strandbias & input.format != "vcf") {
+      warning("Transcriptional strand bias cannot be estimated from 96 classes input. \n Please provide vcf-like input format.")
+    }
+    
+    output$mutmatrix <- samples.muts
+    
+    return(output)
+}

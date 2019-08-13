@@ -1,5 +1,6 @@
 library(seqinr)                # comp()
 library(MutationalPatterns)    # cos_sim_matrix()
+library(plyr)
 library(dplyr)
 library(reshape2)
 library(ggplot2)
@@ -281,6 +282,10 @@ bootstrap_mm_signatures <- function(muts.input,
     # List to populate with signatures
     mutSigs <- list()
     
+    # Setup progress bar
+    pbar <- create_progress_bar('text')
+    pbar$init(length(samples))
+    
     for(i in 1:length(samples)){
         # Loop through samples, generating a data frame of signature contributions for each
         sub <- as.integer(muts.input[classes,i])
@@ -292,22 +297,23 @@ bootstrap_mm_signatures <- function(muts.input,
         
         # prepare the signatures to fit for each sample
         if(is.list(sample.sigt.profs)){
-            sigt.prof <- list()
+            sig.prof <- list()
             for(s in 1:ncol(bootMat)){
-                sigt.prof[[names(bootMat)[s]]] <- sample.sigt.profs[[samples[i]]]
+                sig.prof[[names(bootMat)[s]]] <- sample.sigt.profs[[samples[i]]]
             }
         } else {
-            sigt.prof <- NULL
+            sig.prof <- NULL
         }
         
         ### Run mmSig
         sig_out <- mm_fit_signatures(muts.input=bootMat, 
                                      sig.input=sig.input,
                                      out.file = NULL,
-                                     sample.sigt.profs=sigt.prof, 
+                                     sample.sigt.profs=sig.prof, 
                                      dbg=FALSE)
         
         mutSigs[[i]] <- sig_out
+        pbar$step()
     }
     names(mutSigs) <- samples
     
