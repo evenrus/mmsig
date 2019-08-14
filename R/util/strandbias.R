@@ -26,7 +26,7 @@ getStrandBias <- function(data_5cols){
     mut_mat_stranded <- mut_matrix_stranded(vcf_list = sample_list, ref_genome = ref_genome, ranges = genes_hg19, mode = "transcription")
     
     mut_df_stranded <- as.data.frame(mut_mat_stranded) %>%
-        mutate(type = rownames(as.data.frame(mut_mat_stranded))) %>%
+        dplyr::mutate(type = rownames(as.data.frame(mut_mat_stranded))) %>%
         melt(variable.name = 'group', value.name = 'no_mutations') %>%
         separate(col = 'type', into = c('type', 'strand'), sep = "-")
     
@@ -34,24 +34,24 @@ getStrandBias <- function(data_5cols){
     mut_strandtest <- strand_bias_test(mut_df_stranded)
     mut_strandtest$FDR <- p.adjust(mut_strandtest$p_poisson, method = "fdr")
     
-    mut_strandtest <- mutate(mut_strandtest, significant = ifelse(FDR < 0.1, "*", ""))
+    mut_strandtest <- dplyr::mutate(mut_strandtest, significant = ifelse(FDR < 0.1, "*", ""))
     
     # Test for mm1
     mm1 <- c("A[C>T]C","C[C>T]A","G[C>T]A","G[C>T]T","G[C>T]C")
     
     mut_mm1 <- mut_df_stranded %>%
         filter(type %in% mm1) %>%
-        group_by(group, strand) %>%
-        summarise(count = sum(no_mutations)) %>%
+        dplyr::group_by(group, strand) %>%
+        dplyr::summarise(count = sum(no_mutations)) %>%
         as.data.frame() %>%
         dcast(group ~ strand, value.var = "count") %>%
         rowwise() %>%
-        mutate(ratio = transcribed/untranscribed,
-               p_poisson = poisson.test(transcribed, untranscribed, r = 1)$p.value) %>% # applying the same poisson test as the strand_bias_test function
+        dplyr::mutate(ratio = transcribed/untranscribed,
+                      p_poisson = poisson.test(transcribed, untranscribed, r = 1)$p.value) %>% # applying the same poisson test as the strand_bias_test function
         as.data.frame()
     
     mut_mm1$FDR <- p.adjust(mut_mm1$p_poisson, method = "fdr")
-    mut_mm1 <- mutate(mut_mm1, significant = ifelse(FDR < 0.1, "*", ""))
+    mut_mm1 <- dplyr::mutate(mut_mm1, significant = ifelse(FDR < 0.1, "*", ""))
     
     
     output <- list(all_3nt = mut_strandtest,
