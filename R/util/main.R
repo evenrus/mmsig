@@ -30,12 +30,12 @@ mm_fit_signatures = function(muts.input,
     muts.input: mutation input data frame as specified above
     sig.input: mutational signature reference with mutational classes as rows and signature exposures as columns:
                Substitution.Type, Trinucleotide, signature.1, ... signature.n
-    sample.sigt.profs: NULL = uses the hard coded signature reference for all samples. 
+    sample.sigt.profs: NULL = use all signatures provided in the reference. 
                        Optionally provide list with signatures to consider for each sample
     dbg: FALSE = silent; TRUE = verbose
-    bootstrap:
-    iterations:
-    strandbias:
+    bootstrap: TRUE/FALSE for whether bootstrapping is to be performed
+    iterations: number of bootstrapping iterations to perform (only if bootstrap == TRUE)
+    strandbias: TRUE/FALSE for whether transcriptional strand bias should be tested for (only for vcf-like input format)
     "
     
     #####################################################     
@@ -68,6 +68,7 @@ mm_fit_signatures = function(muts.input,
     mutlist = paste(consigts.defn[,2],paste(substr(consigts.defn[,2],1,1),substr(consigts.defn[,1],3,3),substr(consigts.defn[,2],3,3),sep=""),sep=">")
     consigts.defn <- sapply(consigts.defn[,3:ncol(consigts.defn)], as.numeric)  #n be cautious in the original the first two columns are included
     rownames(consigts.defn)<-mutlist
+    ref_signatures <- colnames(consigts.defn) # names of signatures in reference
   
     # Process sample mutational profiles
     samples.muts <- samples.muts[names(samples.muts) != "Total"]                       # remove totals column
@@ -79,9 +80,8 @@ mm_fit_signatures = function(muts.input,
         spit(dbg, "using mm signature profiles from input argument")
         sigt.profs <- sample.sigt.profs
     } else {
-        spit(dbg, "using prior multiple myeloma signature profiles")
-        mm.sigts <- (c("SBS1","SBS2","SBS5","SBS8","SBS9",
-                       "SBS13","SBS18","SBS.MM1"))
+        spit(dbg, "defaulting to use all signatures in the provided reference")
+        mm.sigts <- ref_signatures
         
         sigt.profs <- list()
         for (i in 1:length(samples)) {
