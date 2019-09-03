@@ -37,7 +37,7 @@ getStrandBias <- function(data_5cols){
     mut_strandtest <- dplyr::mutate(mut_strandtest, significant = ifelse(FDR < 0.1, "*", ""))
     
     # Test for mm1
-    mm1 <- c("A[C>T]C","C[C>T]A","G[C>T]A","G[C>T]T","G[C>T]C")
+    mm1 <- c("C[C>T]A","G[C>T]A", "G[C>T]C", "G[C>T]G", "G[C>T]T")
     
     mut_mm1 <- mut_df_stranded %>%
         filter(type %in% mm1) %>%
