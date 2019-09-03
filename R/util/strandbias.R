@@ -46,10 +46,21 @@ getStrandBias <- function(data_5cols){
         as.data.frame() %>%
         dcast(group ~ strand, value.var = "count") %>%
         rowwise() %>%
-        dplyr::mutate(ratio = transcribed/untranscribed,
-                      p_poisson = poisson.test(transcribed, untranscribed, r = 1)$p.value) %>% # applying the same poisson test as the strand_bias_test function
+        dplyr::mutate(ratio = transcribed/untranscribed) %>% 
         as.data.frame()
     
+    # Applying the same poisson test as the strand_bias_test function
+    
+    p_poisson <- list()
+    for(i in 1:nrow(mut_mm1)){
+        transcribed <- mut_mm1[i,"transcribed"]
+        untranscribed <- mut_mm1[i,"untranscribed"]
+        pval <- poisson.test(transcribed, untranscribed, r = 1)$p.value
+        
+        p_poisson[[i]] <- ifelse(is.numeric(pval), pval, NA)
+    }
+    
+    mut_mm1$p_poisson <- unlist(p_poisson)
     mut_mm1$FDR <- p.adjust(mut_mm1$p_poisson, method = "fdr")
     mut_mm1 <- dplyr::mutate(mut_mm1, significant = ifelse(FDR < 0.1, "*", ""))
     
