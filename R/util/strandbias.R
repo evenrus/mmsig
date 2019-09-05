@@ -62,7 +62,7 @@ getStrandBias <- function(data_5cols){
     
     mut_mm1$p_poisson <- unlist(p_poisson)
     mut_mm1$FDR <- p.adjust(mut_mm1$p_poisson, method = "fdr")
-    mut_mm1 <- dplyr::mutate(mut_mm1, significant = ifelse(FDR < 0.1, "*", ""))
+    mut_mm1 <- dplyr::mutate(mut_mm1, MM1_flag = ifelse(FDR < 0.1 & ratio > 1, "*", ""))
     
     
     output <- list(all_3nt = mut_strandtest,
