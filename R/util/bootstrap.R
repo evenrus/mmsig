@@ -28,7 +28,6 @@ bootstrap_fit_signatures <- function(samples.muts,
         # Loop through samples, generating a data frame of signature contributions for each
         sub <- as.integer(samples.muts[classes,i])
         total <- sum(sub)
-        
         # sample new 96-classes profiles from the multinomial distribution
         bootMat <- data.frame(rmultinom(n = iterations, size = total, prob = sub/total))
         row.names(bootMat) <- classes

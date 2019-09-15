@@ -1,5 +1,24 @@
 ## Helper functions for mmsig
 
+vcfCleaner <- function(snvs){
+    snvs <- snvs[snvs$ref %in% c("A","C","G","T") & snvs$alt %in% c("A","C","G","T"),] # remove indels
+    snvs$chr <- as.character(snvs$chr)
+    snvs <- snvs[snvs$chr %in% paste0("chr", c(1:22, "X")),]
+    snvs$pos <- as.numeric(snvs$pos)
+    snvs <- snvs[complete.cases(snvs),]
+    return(snvs)
+}
+
+refCheck <- function(snvs, genome){
+    # subset 100 mutations to check
+    sub <- snvs[sample(nrow(snvs), 100),]
+    ## Get the reference genome positions
+    newRef <- getSeq(genome, as.character(sub$chr), sub$pos, sub$pos)
+    # Check reference genome positions
+    out <- all(newRef == sub$ref)
+    return(out)
+}
+
 spit = function (dbg, mess, ...) {
     if (dbg) { print( sprintf(mess,...) ) }
 }

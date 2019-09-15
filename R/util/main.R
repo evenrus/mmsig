@@ -22,6 +22,7 @@ mm_fit_signatures = function(muts.input,
                              bootstrap=FALSE,
                              iterations=1000,
                              strandbias=FALSE,
+                             refcheck=TRUE,
                              dbg=FALSE) {
     "
     input.format:
@@ -47,6 +48,23 @@ mm_fit_signatures = function(muts.input,
     
     # Input mutation data
     if(input.format == "vcf") {
+      
+        if(sum(c("sample", "chr", "pos", "ref", "alt") %in% names(muts.input)) != 5){
+            stop("ERROR: Please provide the following data columns: sample, chr, pos, ref, alt")
+        }
+      
+        muts.input <- vcfCleaner(muts.input)
+
+        if(nrow(muts.input) == 0){
+            stop("ERROR: Inappropriate input data format")
+        }
+        
+        if(refcheck){
+            if(!refCheck(muts.input, BSgenome.Hsapiens.UCSC.hg19)){
+                stop("ERROR: Wrong reference genome, please provide mutational data aligned to hg19/GRCh37")
+            }
+        }
+        
         # Input sample data
         samples.muts <- mut.to.sigs.input(mut.ref = muts.input,
                                           sample.id = "sample",
@@ -55,12 +73,13 @@ mm_fit_signatures = function(muts.input,
                                           ref = "ref",
                                           alt = "alt",
                                           bsg = BSgenome.Hsapiens.UCSC.hg19)
+        
         samples.muts <- as.data.frame(t(samples.muts))
         
     } else if(input.format == "classes"){
         samples.muts <- muts.input
     } else{
-        stop("Invalid input format, please provide a vcf-like format ('VCF') or 96 mutational classes ('classes')")
+        stop("ERROR: Invalid input format, please provide a vcf-like format ('vcf') or 96 mutational classes ('classes')")
     }
 
     # Process signature reference
