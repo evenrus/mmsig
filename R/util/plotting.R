@@ -16,7 +16,7 @@ rotatedAxisElementText = function(angle,position='x'){
 
 scale_fill_sigs <- function(...){
     ggplot2:::manual_scale('fill', 
-                           values = setNames(c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(1, "Set3")),
+                           values = setNames(c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(3, "Set3")),
                                              c("SBS1", "SBS2", "SBS5", "SBS8", "SBS9", "SBS13", "SBS18", "SBS-MM1", "SBS84")), 
                            ...)
 }
