@@ -78,6 +78,8 @@ mm_fit_signatures = function(muts.input,
         
     } else if(input.format == "classes"){
         samples.muts <- muts.input
+        samples.muts <- samples.muts[names(samples.muts) != "Total"]                       # remove totals column
+        samples.muts <- samples.muts[1:96,,drop=FALSE]                                     # remove additional rows (e.g. "Total)"
     } else{
         stop("ERROR: Invalid input format, please provide a vcf-like format ('vcf') or 96 mutational classes ('classes')")
     }
@@ -88,12 +90,10 @@ mm_fit_signatures = function(muts.input,
     consigts.defn <- sapply(consigts.defn[,3:ncol(consigts.defn)], as.numeric)  #n be cautious in the original the first two columns are included
     rownames(consigts.defn)<-mutlist
     ref_signatures <- colnames(consigts.defn) # names of signatures in reference
-  
+    
     # Process sample mutational profiles
-    samples.muts <- samples.muts[names(samples.muts) != "Total"]                       # remove totals column
-    samples.muts <- samples.muts[1:96,]                                                # remove additional rows (e.g. "Total)"
     samples <- colnames(samples.muts)
-
+    
     # Assign which signatures to fit to each sample
     if(is.list(sample.sigt.profs)){
         spit(dbg, "using mm signature profiles from input argument")
