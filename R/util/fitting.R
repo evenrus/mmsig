@@ -3,6 +3,7 @@
 fit_signatures = function(samples.muts,
                           consigts.defn,
                           sigt.profs, 
+                          cos_sim_threshold,
                           dbg=FALSE) {
     "
     samples.muts = 96 classes mutational profile for samples
@@ -61,7 +62,7 @@ fit_signatures = function(samples.muts,
                 cosReduction <- c(cosReduction, sample.cos.sim.meas-red.cos.sim.meas)
                 }
             names(cosReduction) <- rem.names
-            if (min(cosReduction) < 0.01) {
+            if (min(cosReduction) < cos_sim_threshold) {
                 spit(dbg, "removing: %s", names(cosReduction)[which.min(cosReduction)])
                 rem.sample.consigts.defn <- rem.sample.consigts.defn[,- which(colnames(rem.sample.consigts.defn)==names(which.min(cosReduction)))]
                 rem.alpha <-  em_signatures(sigts.defn=rem.sample.consigts.defn,mut.freqs=sample.mut.freqs,max.iter=max.em.iter,dbg=dbg)

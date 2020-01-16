@@ -23,6 +23,7 @@ mm_fit_signatures = function(muts.input,
                              iterations=1000,
                              strandbias=FALSE,
                              refcheck=TRUE,
+                             cos_sim_threshold=0.01,
                              dbg=FALSE) {
     "
     input.format:
@@ -37,6 +38,7 @@ mm_fit_signatures = function(muts.input,
     bootstrap: TRUE/FALSE for whether bootstrapping is to be performed
     iterations: number of bootstrapping iterations to perform (only if bootstrap == TRUE)
     strandbias: TRUE/FALSE for whether transcriptional strand bias should be tested for (only for vcf-like input format)
+    cos_sim_threshold: cosine similarity threshold below which signatures are removed from the final profile
     "
     
     #####################################################     
@@ -117,7 +119,8 @@ mm_fit_signatures = function(muts.input,
   
     sigfit <- fit_signatures(samples.muts=samples.muts,
                              consigts.defn=consigts.defn,
-                             sigt.profs=sigt.profs, 
+                             sigt.profs=sigt.profs,
+                             cos_sim_threshold=cos_sim_threshold,
                              dbg=dbg)
     
     output$estimate <- sigfit
@@ -141,7 +144,8 @@ mm_fit_signatures = function(muts.input,
         sigboot <- bootstrap_fit_signatures(samples.muts = samples.muts, 
                                             consigts.defn = consigts.defn,
                                             sigt.profs = sigt.profs, 
-                                            iterations = iterations)
+                                            iterations = iterations,
+                                            cos_sim_threshold = cos_sim_threshold)
         
         sigboot <- left_join(sigboot, sig_est, by = c("sample", "signature"))
         

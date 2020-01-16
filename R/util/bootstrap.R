@@ -2,6 +2,7 @@
 
 bootstrap_fit_signatures <- function(samples.muts, 
                                      consigts.defn,
+                                     cos_sim_threshold,
                                      sigt.profs=sigt.profs, 
                                      iterations = 1000){
     
@@ -43,6 +44,7 @@ bootstrap_fit_signatures <- function(samples.muts,
         sig_out <- fit_signatures(samples.muts=bootMat, 
                                   consigts.defn=consigts.defn,
                                   sigt.profs=sig.prof, 
+                                  cos_sim_threshold=cos_sim_threshold,
                                   dbg=FALSE)
         
         mutSigs[[i]] <- sig_out
