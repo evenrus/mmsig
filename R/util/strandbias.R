@@ -31,10 +31,7 @@ getStrandBias <- function(data_5cols){
         separate(col = 'type', into = c('type', 'strand'), sep = "-")
     
     # Test for all transcriptional strand bias by 3-nt and sample
-    mut_strandtest <- strand_bias_test(mut_df_stranded)
-    mut_strandtest$FDR <- p.adjust(mut_strandtest$p_poisson, method = "fdr")
-    
-    mut_strandtest <- dplyr::mutate(mut_strandtest, significant = ifelse(FDR < 0.1, "*", ""))
+    mut_strandtest <- strand_bias_test(mut_df_stranded) 
     
     # Test for mm1
     mm1 <- c("C[C>T]A","G[C>T]A", "G[C>T]C", "G[C>T]G", "G[C>T]T")
@@ -61,12 +58,44 @@ getStrandBias <- function(data_5cols){
     }
     
     mut_mm1$p_poisson <- unlist(p_poisson)
-    mut_mm1$FDR <- p.adjust(mut_mm1$p_poisson, method = "fdr")
-    mut_mm1 <- dplyr::mutate(mut_mm1, MM1_flag = ifelse(FDR < 0.1 & ratio > 1, "*", ""))
     
+    mut_mm1 <- dplyr::mutate(mut_mm1, MM1_flag = ifelse(p_poisson < 0.05 & ratio > 1, "*", ""))
+    
+    # Test for platinum / SBS35
+    
+    SBS35 <- c("A[C>A]C", "C[C>A]C", "C[C>A]T", "G[C>A]C", "C[C>T]C", "C[C>T]T")
+    
+    mut_SBS35 <- mut_df_stranded %>%
+        filter(type %in% SBS35) %>%
+        dplyr::group_by(group, strand) %>%
+        dplyr::summarise(count = sum(no_mutations)) %>%
+        as.data.frame() %>%
+        dcast(group ~ strand, value.var = "count") %>%
+        rowwise() %>%
+        dplyr::mutate(ratio = transcribed/untranscribed) %>% 
+        as.data.frame()
+    
+    # Applying the same poisson test as the strand_bias_test function
+    
+    p_poisson <- list()
+    for(i in 1:nrow(mut_SBS35)){
+        transcribed <- mut_SBS35[i,"transcribed"]
+        untranscribed <- mut_SBS35[i,"untranscribed"]
+        pval <- poisson.test(transcribed, untranscribed, r = 1)$p.value
+        
+        p_poisson[[i]] <- ifelse(is.numeric(pval), pval, NA)
+    }
+    
+    mut_SBS35$p_poisson <- unlist(p_poisson)
+    
+    mut_SBS35 <- dplyr::mutate(mut_SBS35, SBS35_flag = ifelse(p_poisson < 0.05 & ratio > 1, "*", ""))
+
+    # output
     
     output <- list(all_3nt = mut_strandtest,
-                   mm1 = mut_mm1)
+                   mm1 = mut_mm1,
+                   SBS35 = mut_SBS35)
+    
     return(output)
 }
 

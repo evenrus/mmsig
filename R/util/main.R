@@ -162,6 +162,7 @@ mm_fit_signatures = function(muts.input,
       
       output$strand_bias_all_3nt <- strand_bias_out$all_3nt
       output$strand_bias_mm1 <- strand_bias_out$mm1
+      output$strand_bias_SBS35 <- strand_bias_out$SBS35
         
     } else if(strandbias & input.format != "vcf") {
       warning("Transcriptional strand bias cannot be estimated from 96 classes input. \n Please provide vcf-like input format.")
