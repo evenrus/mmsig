@@ -26,8 +26,8 @@ getStrandBias <- function(data_5cols){
     mut_mat_stranded <- mut_matrix_stranded(vcf_list = sample_list, ref_genome = ref_genome, ranges = genes_hg19, mode = "transcription")
     
     mut_df_stranded <- as.data.frame(mut_mat_stranded) %>%
-        dplyr::mutate(type = rownames(as.data.frame(mut_mat_stranded))) %>%
-        melt(variable.name = 'group', value.name = 'no_mutations') %>%
+        rownames_to_column(var = "type") %>%
+        melt(id.var = "type", variable.name = 'group', value.name = 'no_mutations') %>%
         separate(col = 'type', into = c('type', 'strand'), sep = "-")
     
     # Test for all transcriptional strand bias by 3-nt and sample
@@ -62,8 +62,8 @@ getStrandBias <- function(data_5cols){
     mut_mm1 <- dplyr::mutate(mut_mm1, MM1_flag = ifelse(p_poisson < 0.05 & ratio > 1, "*", ""))
     
     # Test for platinum / SBS35
-    
-    SBS35 <- c("A[C>A]C", "C[C>A]C", "C[C>A]T", "G[C>A]C", "C[C>T]C", "C[C>T]T")
+
+    SBS35 <- c("C[C>A]C", "C[C>T]C")
     
     mut_SBS35 <- mut_df_stranded %>%
         filter(type %in% SBS35) %>%

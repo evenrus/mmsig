@@ -1,6 +1,6 @@
 # Example of running mmsig.
 # Fit previously defined reference mutational signatures to example data from a previously published cohort of multiple myeloma whole genomes
-# v 01.03.2020
+# v 02.02.2020
 
 # Import data
 # mmsig can take input data both as a matrix of 96 mutational classes profiles, and in a 5-column format where each row is a mutation with chromosome, position, etc. 
@@ -12,6 +12,7 @@ muts_example_5cols <- read.delim("../data/example_muts_5cols.txt", stringsAsFact
 
 # Import signature reference
 sig_ref <- read.delim("../data/mm_signature_definitions.txt", stringsAsFactors = F, header=T) 
+sig_ref <- sig_ref[-which(names(sig_ref) == "SBS84")] # remove canonical AID for genome-wide analysis
 
 # Source functions
 source("util/main.R")
@@ -35,7 +36,9 @@ sig_out <- mm_fit_signatures(muts.input=muts_example_5cols,
                              dbg=FALSE) 
 
 # data summaries and plots
-plot_signatures(sig_out$estimate)
+plot_signatures(sig_out$estimate, 
+                samples = T, 
+                sig_order = c("SBS1", "SBS2", "SBS13", "SBS5", "SBS8", "SBS9", "SBS18", "SBS-MM1", "SBS35"))
 
 bootSigsPlot(filter(sig_out$bootstrap, sample %in% c("PD26412a", "PD26411c", "PD26414a")))
 
@@ -44,6 +47,5 @@ head(sig_out$strand_bias_all_3nt)
 head(sig_out$strand_bias_mm1)
 
 head(sig_out$strand_bias_SBS35)
-
 
 

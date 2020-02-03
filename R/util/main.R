@@ -1,19 +1,11 @@
-library(seqinr)                # comp()
-library(MutationalPatterns)    # cos_sim_matrix()
-library(plyr)
-library(dplyr)
-library(reshape2)
-library(ggplot2)
-library(RColorBrewer)
-library(tidyr)
-library(BSgenome)
-library(deconstructSigs)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
-library(ref_genome, character.only = TRUE)
+packages <- c("seqinr", "plyr", "tidyverse", "reshape2", "RColorBrewer", "BSgenome", "TxDb.Hsapiens.UCSC.hg19.knownGene", 
+              "BSgenome.Hsapiens.UCSC.hg19", "MutationalPatterns", "deconstructSigs")
+
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+
+invisible(suppressWarnings(suppressMessages(lapply(packages, library, character.only = TRUE))))
 
 options(scipen = 999)
-
 
 mm_fit_signatures = function(muts.input, 
                              sig.input,

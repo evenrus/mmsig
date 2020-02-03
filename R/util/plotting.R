@@ -15,34 +15,51 @@ rotatedAxisElementText = function(angle,position='x'){
 }
 
 scale_fill_sigs <- function(...){
-    ggplot2:::manual_scale('fill', 
-                           values = setNames(c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(3, "Set3")),
-                                             c("SBS1", "SBS2", "SBS5", "SBS8", "SBS9", "SBS13", "SBS18", "SBS-MM1", "SBS84")), 
-                           ...)
+  ggplot2:::manual_scale('fill', 
+                         values = setNames(c(RColorBrewer::brewer.pal(8, "Dark2"), "lightblue", "#FB8072"),
+                                           c("SBS1", "SBS2", "SBS5", "SBS8", "SBS9", "SBS13", "SBS18", "SBS-MM1", "SBS35", "SBS84")), 
+                         ...)
 }
 
-plot_signatures = function(sig, filename = NULL){
+plot_signatures = function(sig,
+                           sig_order = c("SBS1", "SBS2", "SBS13", "SBS5", "SBS8", "SBS9", "SBS18", "SBS-MM1", "SBS35"),
+                           samples = FALSE){
   "
   Plotting function for mmSig package
-  filename: path to save plot. If NULL (default), returns plot to environment
+  sig_order: order of signatures to plot in stacked bar chart, from top to bottom
+  samples: boolean whether or not to plot sample names on the x axis
   "
-  if(is.null(filename)){
-      par(mfrow=c(1,1), mar=c(7,5,5,10), xpd=T)
-      barplot(as.matrix(t(sig[,-ncol(sig)])), 
-              col = c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(4, "Set3")), 
-              las=2, cex.names = 0.7, names.arg = sig$sampleID, space=rep(0, nrow(sig)), border = NA)
-      legend("topright",legend=(colnames(sig)[-ncol(sig)]),bty="n", pch=15, 
-            col=c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(4, "Set3")),
-            cex=1, pt.cex=1, inset=c(-0.15,0.0),x.intersp = 1,y.intersp = 1)
+  sigPlot <- sig %>%
+      rownames_to_column(var = "sample") %>%
+      dplyr::select(-mutations) %>%
+      melt(id.var = "sample", variable.name = "SBS", value.name = "prop") %>%
+      mutate(SBS = factor(SBS, levels = sig_order)) %>%
+      ggplot(aes(sample, prop, fill = SBS)) +
+      geom_col(width=1)+
+      scale_fill_sigs()+
+      scale_y_continuous(expand = c(0,0))+
+      theme_bw()+
+      labs(x = "Sample",
+           y = "Relative contribution",
+           fill = "Signature")+
+      theme(text = element_text(size = 10, color = "black"),
+            axis.text = element_text(color = "black"),
+            axis.text.y = element_text(size = 12),
+            axis.title = element_text(size = 14),
+            panel.grid = element_blank(),
+            panel.border = element_blank(),
+            legend.position = "right",
+            legend.text = element_text(size = 12),
+            legend.title = element_text(size = 14),
+            axis.title.x = element_blank())
+  
+  if(samples){
+    sigPlot +
+          theme(axis.text.x = rotatedAxisElementText(90, "top"))
   } else{
-      pdf(filename, width = 12, height = 7)
-      barplot(as.matrix(t(sig[,-ncol(sig)])), 
-              col = c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(4, "Set3")), 
-              las=2, cex.names = 0.7, names.arg = sig$sampleID, space=rep(0, nrow(sig)), border = NA)
-      legend("topright",legend=(colnames(sig)[-ncol(sig)]),bty="n", pch=15, 
-            col=c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(4, "Set3")),
-            cex=1, pt.cex=1, inset=c(-0.15,0.0),x.intersp = 1,y.intersp = 1)
-      dev.off()
+    sigPlot +
+          theme(axis.text.x = element_blank(),
+                axis.ticks.x = element_blank())
   }
 }
 
