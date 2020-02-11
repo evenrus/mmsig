@@ -10,8 +10,10 @@ vcfCleaner <- function(snvs){
 }
 
 refCheck <- function(snvs, genome){
-    # subset 100 mutations to check
-    sub <- snvs[sample(nrow(snvs), 100),]
+    # number of mutations to check
+    nCheck <- ifelse(nrows(snvs) > 100, 100, nrow(snvs))
+    # subset mutations to check
+    sub <- snvs[sample(nrow(snvs), nCheck),]
     ## Get the reference genome positions
     newRef <- getSeq(genome, as.character(sub$chr), sub$pos, sub$pos)
     # Check reference genome positions
