@@ -1,0 +1,34 @@
+Package: mmsig
+Title: A Mutational Signature Fitting Tool for Hematological Cancers
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Even", family = "Rustad", role = c("aut", "cre"), 
+           email = "ehrustad@gmail.com",comment = c(ORCID = "https://orcid.org/0000-0002-9320-4963")),
+    person(given = "Nicos", family = "Angelopoulos", role = "aut", email = "nicos.angelopoulos@gmail.com"),
+    person(given = "Francesco", family = "Maura", role = c("aut", "cph"), email = "mauraf@mskcc.org")
+           )
+Description: A mutational signature fitting approach based on a expectation maximization algorithm 
+            and using cosine similarities for dynamic error suppression. Provides bootstrapping-based 
+            confidence intervals and assessment of transcriptional strand bias. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    seqinr,
+    plyr,
+    tibble,
+    tidyr,
+    dplyr,
+    ggplot2,
+    reshape2,
+    RColorBrewer,
+    BSgenome,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    BSgenome.Hsapiens.UCSC.hg19,
+    MutationalPatterns,
+    deconstructSigs,
+    GenomicFeatures
+Depends: 
+    R (>= 2.10)
