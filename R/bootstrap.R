@@ -6,6 +6,7 @@
 #' @param cos_sim_threshold cosine similarity threshold to remove signatures
 #' @param iterations number of mutational profiles to draw from the multinomial distribution of each sample
 #' @importFrom plyr create_progress_bar
+#' @importFrom plyr progress_text
 #' @importFrom dplyr bind_rows
 #'
 #' @return For each mutational signature, returns its relative contribution as point estimate and bootstrapping mean with 95 % CI

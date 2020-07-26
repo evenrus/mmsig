@@ -15,6 +15,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+biocViews:
 Imports: 
     seqinr,
     plyr,
@@ -29,6 +30,7 @@ Imports:
     BSgenome.Hsapiens.UCSC.hg19,
     MutationalPatterns,
     deconstructSigs,
-    GenomicFeatures
+    GenomicFeatures,
+    GenomicRanges
 Depends: 
     R (>= 2.10)

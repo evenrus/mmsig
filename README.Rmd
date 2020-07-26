@@ -1,0 +1,100 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# mmsig
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of mmsig is to provide a flexible and easily interpretable mutational signature analysis tool. mmsig was developed for hematological malignancies, but can be extended to any cancer with a well-known mutational signature landscape. 
+
+mmsig is based on an expectation maximization algorithm for mutational signature fitting and applies cosine similarities for dynamic error suppression as well as bootstrapping-based confidence intervals and assessment of transcriptional strand bias.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("evenrus/mmsig@dev")
+```
+# Example
+
+This is a basic example which shows mmsig usage
+
+```{r}
+library(mmsig)
+
+data(mm_5_col)
+data(signature_ref)
+
+```
+
+## setting up the mutational signature reference
+
+
+```{r}
+# remove canonical AID (SBS84) for genome-wide analysis
+# remove the platinum signature (SBS35) because the patients are not platinum exposed
+
+sig_ref <- signature_ref[c("sub", "tri", "SBS1", "SBS2", "SBS5", "SBS8", 
+                           "SBS9", "SBS13", "SBS18", "SBS-MM1")] 
+
+head(sig_ref)
+```
+## Setting up the mutation data
+
+```{r}
+# subset three samples to reduce run time
+
+mm_5_col_subset <- mm_5_col[mm_5_col$sample %in% c("MEL_PD26412a", "MEL_PD26411c", "PD26414a"),]
+head(mm_5_col_subset)
+```
+## Perform mutational signature analysis
+
+
+```{r}
+# Bootstrapping large datasets with many iterations can significantly increase runtime. 
+
+sig_out <- mm_fit_signatures(muts.input=mm_5_col_subset, 
+                             sig.input=sig_ref,
+                             input.format = "vcf",
+                             sample.sigt.profs = NULL, 
+                             strandbias = FALSE, ## ERRORS HERE, NEED QC
+                             bootstrap = TRUE,
+                             iterations = 20, # 1000 iterations recommended for stable results
+                             refcheck=TRUE,
+                             cos_sim_threshold = 0.01,
+                             ref_genome = "BSgenome.Hsapiens.UCSC.hg19",
+                             dbg=FALSE) 
+
+```
+
+## Plot signature estimates
+
+```{r}
+plot_signatures(sig_out$estimate, 
+                samples = T, 
+                sig_order = c("SBS1", "SBS2", "SBS13", "SBS5", "SBS8", "SBS9", 
+                              "SBS18", "SBS-MM1", "SBS35"))
+
+```
+
+## Plot bootstraping confidence intervals
+
+```{r}
+bootSigsPlot(sig_out$bootstrap)
+```
+

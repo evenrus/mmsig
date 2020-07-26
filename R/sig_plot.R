@@ -5,6 +5,19 @@
 #' @param samples boolean whether or not to plot sample names on the x axis
 #'
 #' @return relative contribution of mutational signatures in each sample
+#' @importFrom dplyr mutate
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 geom_col
+#' @importFrom ggplot2 labs
 #' @export
 #'
 plot_signatures = function(sig,
