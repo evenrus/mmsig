@@ -36,7 +36,7 @@ getStrandBias <- function(data_5cols,
   names(sample_list) <- samples
 
   # transcriptional strand annotation
-  genes_hg19 <- GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
+  genes_hg19 <- suppressMessages(GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
 
   mut_mat_stranded <- MutationalPatterns::mut_matrix_stranded(vcf_list = sample_list,
                                                               ref_genome = ref_genome,
@@ -49,7 +49,7 @@ getStrandBias <- function(data_5cols,
     separate(col = 'type', into = c('type', 'strand'), sep = "-")
 
   # Test for all transcriptional strand bias by 3-nt and sample
-  mut_strandtest <- strand_bias_test(mut_df_stranded)
+  mut_strandtest <- suppressMessages(strand_bias_test(mut_df_stranded))
 
   # Test for mm1
   mm1 <- c("C[C>T]A","G[C>T]A", "G[C>T]C", "G[C>T]G", "G[C>T]T")

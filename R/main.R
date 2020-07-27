@@ -152,7 +152,8 @@ mm_fit_signatures = function(muts.input,
 
   if(strandbias & input.format == "vcf"){
 
-    strand_bias_out <- getStrandBias(muts.input)
+    strand_bias_out <- getStrandBias(muts.input,
+                                     ref_genome = ref_genome)
 
     output$strand_bias_all_3nt <- strand_bias_out$all_3nt
     output$strand_bias_mm1 <- strand_bias_out$mm1
