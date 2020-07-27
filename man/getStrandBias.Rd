@@ -4,12 +4,10 @@
 \alias{getStrandBias}
 \title{Statistical tests for transcriptional strand bias}
 \usage{
-getStrandBias(data_5cols, ref_genome = ref_genome)
+getStrandBias(data_5cols)
 }
 \arguments{
 \item{data_5cols}{input mutational catalog in 5-column format}
-
-\item{ref_genome}{reference genome object name, currently only supports BSgenome.Hsapiens.UCSC.hg19 (default)}
 }
 \value{
 list of results from strand bias in each trinucleotide context and pooled analysis for SBS-MM1 and SBS35

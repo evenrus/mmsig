@@ -9,7 +9,6 @@
 #' @param strandbias TRUE/FALSE for whether transcriptional strand bias should be tested for (only for vcf-like input format)
 #' @param refcheck check that input mutational catalog (if vcf-format) is aligned to hg19
 #' @param cos_sim_threshold cosine similarity threshold below which signatures are removed from the final profile
-#' @param ref_genome reference genome object name, currently only supports BSgenome.Hsapiens.UCSC.hg19 (default)
 #' @param dbg FALSE = silent; TRUE = verbose
 #' @importFrom dplyr left_join
 #' @importFrom BSgenome.Hsapiens.UCSC.hg19 BSgenome.Hsapiens.UCSC.hg19
@@ -27,7 +26,6 @@ mm_fit_signatures = function(muts.input,
                              strandbias=FALSE,
                              refcheck=TRUE,
                              cos_sim_threshold=0.01,
-                             ref_genome="BSgenome.Hsapiens.UCSC.hg19",
                              dbg=FALSE) {
   "
 
@@ -152,8 +150,7 @@ mm_fit_signatures = function(muts.input,
 
   if(strandbias & input.format == "vcf"){
 
-    strand_bias_out <- getStrandBias(muts.input,
-                                     ref_genome = ref_genome)
+    strand_bias_out <- getStrandBias(muts.input)
 
     output$strand_bias_all_3nt <- strand_bias_out$all_3nt
     output$strand_bias_mm1 <- strand_bias_out$mm1

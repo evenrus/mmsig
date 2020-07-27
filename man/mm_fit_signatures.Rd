@@ -14,7 +14,6 @@ mm_fit_signatures(
   strandbias = FALSE,
   refcheck = TRUE,
   cos_sim_threshold = 0.01,
-  ref_genome = "BSgenome.Hsapiens.UCSC.hg19",
   dbg = FALSE
 )
 }
@@ -36,8 +35,6 @@ mm_fit_signatures(
 \item{refcheck}{check that input mutational catalog (if vcf-format) is aligned to hg19}
 
 \item{cos_sim_threshold}{cosine similarity threshold below which signatures are removed from the final profile}
-
-\item{ref_genome}{reference genome object name, currently only supports BSgenome.Hsapiens.UCSC.hg19 (default)}
 
 \item{dbg}{FALSE = silent; TRUE = verbose}
 }

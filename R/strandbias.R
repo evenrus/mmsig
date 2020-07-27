@@ -1,7 +1,6 @@
 #' Statistical tests for transcriptional strand bias
 #'
 #' @param data_5cols input mutational catalog in 5-column format
-#' @param ref_genome reference genome object name, currently only supports BSgenome.Hsapiens.UCSC.hg19 (default)
 #' @return list of results from strand bias in each trinucleotide context and pooled analysis for SBS-MM1 and SBS35
 #' @importFrom dplyr %>%
 #' @importFrom tibble rownames_to_column
@@ -13,11 +12,11 @@
 #' @importFrom dplyr rowwise
 #' @importFrom stats poisson.test
 #' @importFrom TxDb.Hsapiens.UCSC.hg19.knownGene TxDb.Hsapiens.UCSC.hg19.knownGene
+#' @importFrom BSgenome.Hsapiens.UCSC.hg19 BSgenome.Hsapiens.UCSC.hg19
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
 #'
-getStrandBias <- function(data_5cols,
-                          ref_genome = ref_genome){
+getStrandBias <- function(data_5cols){
 
   # Generate GRange list from data in vcf-like format
   sample_list <- list()
@@ -35,13 +34,19 @@ getStrandBias <- function(data_5cols,
 
   names(sample_list) <- samples
 
+  print(head(sample_list))
+
   # transcriptional strand annotation
   genes_hg19 <- suppressMessages(GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
 
+  print(head(genes_hg19))
+
   mut_mat_stranded <- MutationalPatterns::mut_matrix_stranded(vcf_list = sample_list,
-                                                              ref_genome = ref_genome,
+                                                              ref_genome = BSgenome.Hsapiens.UCSC.hg19,
                                                               ranges = genes_hg19,
                                                               mode = "transcription")
+
+  print(head(mut_mat_stranded))
 
   mut_df_stranded <- as.data.frame(mut_mat_stranded) %>%
     rownames_to_column(var = "type") %>%

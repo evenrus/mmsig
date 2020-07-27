@@ -89,12 +89,11 @@ sig_out <- mm_fit_signatures(muts.input=mm_5_col_subset,
                              sig.input=sig_ref,
                              input.format = "vcf",
                              sample.sigt.profs = NULL, 
-                             strandbias = F,
-                             bootstrap = T,
+                             strandbias = FALSE,
+                             bootstrap = TRUE,
                              iterations = 20, # 1000 iterations recommended for stable results
                              refcheck=TRUE,
                              cos_sim_threshold = 0.01,
-                             ref_genome = "BSgenome.Hsapiens.UCSC.hg19",
                              dbg=FALSE) 
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=======================                                               |  33%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================================| 100%
 ```
@@ -117,3 +116,9 @@ bootSigsPlot(sig_out$bootstrap)
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+## Transcriptional strand bias for SBS-MM1
+
+``` r
+#head(sig_out$strand_bias_mm1)
+```
