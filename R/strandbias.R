@@ -34,19 +34,13 @@ getStrandBias <- function(data_5cols){
 
   names(sample_list) <- samples
 
-  print(head(sample_list))
-
   # transcriptional strand annotation
   genes_hg19 <- suppressMessages(GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
-
-  print(head(genes_hg19))
 
   mut_mat_stranded <- MutationalPatterns::mut_matrix_stranded(vcf_list = sample_list,
                                                               ref_genome = BSgenome.Hsapiens.UCSC.hg19,
                                                               ranges = genes_hg19,
                                                               mode = "transcription")
-
-  print(head(mut_mat_stranded))
 
   mut_df_stranded <- as.data.frame(mut_mat_stranded) %>%
     rownames_to_column(var = "type") %>%
