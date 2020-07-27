@@ -13,6 +13,8 @@
 #' @importFrom dplyr rowwise
 #' @importFrom stats poisson.test
 #' @importFrom TxDb.Hsapiens.UCSC.hg19.knownGene TxDb.Hsapiens.UCSC.hg19.knownGene
+#' @importFrom GenomicRanges GRanges
+#' @importFrom IRanges IRanges
 #'
 getStrandBias <- function(data_5cols,
                           ref_genome = ref_genome){
