@@ -38,7 +38,7 @@ getStrandBias <- function(data_5cols){
   genes_hg19 <- suppressMessages(GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
 
   mut_mat_stranded <- MutationalPatterns::mut_matrix_stranded(vcf_list = sample_list,
-                                                              ref_genome = BSgenome.Hsapiens.UCSC.hg19,
+                                                              ref_genome = "BSgenome.Hsapiens.UCSC.hg19",
                                                               ranges = genes_hg19,
                                                               mode = "transcription")
 
