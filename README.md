@@ -33,6 +33,27 @@ This is a basic example which shows mmsig usage
 
 ``` r
 library(mmsig)
+library(BSgenome.Hsapiens.UCSC.hg19)
+#> Loading required package: BSgenome
+#> Loading required package: S4Vectors
+#> Loading required package: stats4
+#> 
+#> Attaching package: 'S4Vectors'
+#> The following object is masked from 'package:base':
+#> 
+#>     expand.grid
+#> Loading required package: IRanges
+#> Loading required package: GenomeInfoDb
+#> Loading required package: GenomicRanges
+#> Loading required package: Biostrings
+#> Loading required package: XVector
+#> 
+#> Attaching package: 'Biostrings'
+#> The following object is masked from 'package:base':
+#> 
+#>     strsplit
+#> Loading required package: rtracklayer
+
 
 data(mm_5_col)
 data(signature_ref)
@@ -89,7 +110,7 @@ sig_out <- mm_fit_signatures(muts.input=mm_5_col_subset,
                              sig.input=sig_ref,
                              input.format = "vcf",
                              sample.sigt.profs = NULL, 
-                             strandbias = FALSE,
+                             strandbias = TRUE,
                              bootstrap = TRUE,
                              iterations = 20, # 1000 iterations recommended for stable results
                              refcheck=TRUE,
@@ -120,5 +141,9 @@ bootSigsPlot(sig_out$bootstrap)
 ## Transcriptional strand bias for SBS-MM1
 
 ``` r
-#head(sig_out$strand_bias_mm1)
+head(sig_out$strand_bias_mm1)
+#>          group transcribed untranscribed     ratio         p_poisson MM1_flag
+#> 1 MEL_PD26411c         192           119 1.6134454 0.000000000680776        *
+#> 2 MEL_PD26412a         193           148 1.3040541 0.000399079744422        *
+#> 3     PD26414a          29            30 0.9666667 1.000000000000000
 ```

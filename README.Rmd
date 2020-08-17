@@ -37,6 +37,8 @@ This is a basic example which shows mmsig usage
 
 ```{r}
 library(mmsig)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
 
 data(mm_5_col)
 data(signature_ref)

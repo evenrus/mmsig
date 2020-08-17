@@ -32,6 +32,7 @@ Imports:
     deconstructSigs,
     GenomicFeatures,
     GenomicRanges,
-    IRanges
+    IRanges,
+    GenomeInfoDb
 Depends: 
     R (>= 2.10)
