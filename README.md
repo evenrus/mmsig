@@ -54,7 +54,6 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 #>     strsplit
 #> Loading required package: rtracklayer
 
-
 data(mm_5_col)
 data(signature_ref)
 ```

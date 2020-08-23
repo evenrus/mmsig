@@ -3,7 +3,7 @@
 export(bootSigsPlot)
 export(mm_fit_signatures)
 export(plot_signatures)
-importFrom(BSgenome.Hsapiens.UCSC.hg19,BSgenome.Hsapiens.UCSC.hg19)
+import(BSgenome.Hsapiens.UCSC.hg19)
 importFrom(GenomicRanges,GRanges)
 importFrom(IRanges,IRanges)
 importFrom(MutationalPatterns,strand_bias_test)

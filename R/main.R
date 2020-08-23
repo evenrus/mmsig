@@ -11,8 +11,8 @@
 #' @param cos_sim_threshold cosine similarity threshold below which signatures are removed from the final profile
 #' @param dbg FALSE = silent; TRUE = verbose
 #' @importFrom dplyr left_join
-#' @importFrom BSgenome.Hsapiens.UCSC.hg19 BSgenome.Hsapiens.UCSC.hg19
 #' @importFrom deconstructSigs mut.to.sigs.input
+#' @import BSgenome.Hsapiens.UCSC.hg19
 #'
 #' @return mutational signature fitting results for all samples
 #' @export
