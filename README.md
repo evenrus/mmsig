@@ -33,8 +33,28 @@ This is a basic example which shows mmsig usage
 
 ``` r
 library(mmsig)
-library(BSgenome.Hsapiens.UCSC.hg19)
+#> Loading required package: BSgenome.Hsapiens.UCSC.hg19
 #> Loading required package: BSgenome
+#> Loading required package: BiocGenerics
+#> Loading required package: parallel
+#> 
+#> Attaching package: 'BiocGenerics'
+#> The following objects are masked from 'package:parallel':
+#> 
+#>     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+#>     clusterExport, clusterMap, parApply, parCapply, parLapply,
+#>     parLapplyLB, parRapply, parSapply, parSapplyLB
+#> The following objects are masked from 'package:stats':
+#> 
+#>     IQR, mad, sd, var, xtabs
+#> The following objects are masked from 'package:base':
+#> 
+#>     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
+#>     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+#>     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
+#>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+#>     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
+#>     union, unique, unsplit, which, which.max, which.min
 #> Loading required package: S4Vectors
 #> Loading required package: stats4
 #> 

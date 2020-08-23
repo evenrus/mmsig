@@ -27,7 +27,6 @@ Imports:
     RColorBrewer,
     BSgenome,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
-    BSgenome.Hsapiens.UCSC.hg19,
     MutationalPatterns,
     deconstructSigs,
     GenomicFeatures,
@@ -35,4 +34,5 @@ Imports:
     IRanges,
     GenomeInfoDb
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    BSgenome.Hsapiens.UCSC.hg19

@@ -15,8 +15,8 @@
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
 #' @import BSgenome.Hsapiens.UCSC.hg19
-
 #'
+
 getStrandBias <- function(data_5cols){
 
   # Generate GRange list from data in vcf-like format

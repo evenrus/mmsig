@@ -37,7 +37,6 @@ This is a basic example which shows mmsig usage
 
 ```{r}
 library(mmsig)
-library(BSgenome.Hsapiens.UCSC.hg19)
 
 data(mm_5_col)
 data(signature_ref)
@@ -45,7 +44,6 @@ data(signature_ref)
 ```
 
 ## setting up the mutational signature reference
-
 
 ```{r}
 # remove canonical AID (SBS84) for genome-wide analysis
