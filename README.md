@@ -125,6 +125,8 @@ head(mm_5_col_subset)
 ``` r
 # Bootstrapping large datasets with many iterations can significantly increase runtime. 
 
+set.seed(1)
+
 sig_out <- mm_fit_signatures(muts.input=mm_5_col_subset, 
                              sig.input=sig_ref,
                              input.format = "vcf",
