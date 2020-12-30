@@ -30,6 +30,8 @@ getStrandBias <- function(data_5cols){
                             IRanges(start=pos, end=pos),
                             REF= ref,
                             ALT=alt))
+    genome(temp_gr) <- "hg19"
+
     sample_list[[i]]<- (temp_gr)
   }
 
@@ -70,7 +72,7 @@ getStrandBias <- function(data_5cols){
   for(i in 1:nrow(mut_mm1)){
     transcribed <- mut_mm1[i,"transcribed"]
     untranscribed <- mut_mm1[i,"untranscribed"]
-    pval <- poisson.test(transcribed, untranscribed, r = 1)$p.value
+    pval <- poisson.test(c(transcribed, untranscribed), r = 1)$p.value
 
     p_poisson[[i]] <- ifelse(is.numeric(pval), pval, NA)
   }
@@ -99,7 +101,7 @@ getStrandBias <- function(data_5cols){
   for(i in 1:nrow(mut_SBS35)){
     transcribed <- mut_SBS35[i,"transcribed"]
     untranscribed <- mut_SBS35[i,"untranscribed"]
-    pval <- poisson.test(transcribed, untranscribed, r = 1)$p.value
+    pval <- poisson.test(c(transcribed, untranscribed), r = 1)$p.value
 
     p_poisson[[i]] <- ifelse(is.numeric(pval), pval, NA)
   }

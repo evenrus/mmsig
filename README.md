@@ -54,7 +54,7 @@ library(mmsig)
 #>     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
 #>     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
 #>     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-#>     union, unique, unsplit, which, which.max, which.min
+#>     union, unique, unsplit, which.max, which.min
 #> Loading required package: S4Vectors
 #> Loading required package: stats4
 #> 
@@ -163,8 +163,8 @@ bootSigsPlot(sig_out$bootstrap)
 
 ``` r
 head(sig_out$strand_bias_mm1)
-#>          group transcribed untranscribed     ratio         p_poisson MM1_flag
-#> 1 MEL_PD26411c         192           119 1.6134454 0.000000000680776        *
-#> 2 MEL_PD26412a         193           148 1.3040541 0.000399079744422        *
-#> 3     PD26414a          29            30 0.9666667 1.000000000000000
+#>          group transcribed untranscribed     ratio     p_poisson MM1_flag
+#> 1 MEL_PD26411c         192           119 1.6134454 0.00004127438        *
+#> 2 MEL_PD26412a         193           148 1.3040541 0.01705720483        *
+#> 3     PD26414a          29            30 0.9666667 1.00000000000
 ```
