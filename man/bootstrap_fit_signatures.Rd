@@ -9,6 +9,7 @@ bootstrap_fit_signatures(
   consigts.defn,
   sigt.profs,
   cos_sim_threshold,
+  force_include,
   iterations = 1000
 )
 }
@@ -20,6 +21,8 @@ bootstrap_fit_signatures(
 \item{sigt.profs}{which signatures to fit for each sample}
 
 \item{cos_sim_threshold}{cosine similarity threshold to remove signatures}
+
+\item{force_include}{vector with the names of signatures to always keep in the final profile of every sample}
 
 \item{iterations}{number of mutational profiles to draw from the multinomial distribution of each sample}
 }

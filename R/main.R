@@ -9,6 +9,7 @@
 #' @param strandbias TRUE/FALSE for whether transcriptional strand bias should be tested for (only for vcf-like input format)
 #' @param refcheck check that input mutational catalog (if vcf-format) is aligned to hg19
 #' @param cos_sim_threshold cosine similarity threshold below which signatures are removed from the final profile
+#' @param force_include vector with the names of signatures to always keep in the final profile of every sample
 #' @param dbg FALSE = silent; TRUE = verbose
 #' @importFrom dplyr left_join
 #' @importFrom deconstructSigs mut.to.sigs.input
@@ -26,6 +27,7 @@ mm_fit_signatures = function(muts.input,
                              strandbias=FALSE,
                              refcheck=TRUE,
                              cos_sim_threshold=0.01,
+                             force_include=c("SBS1", "SBS5"),
                              dbg=FALSE) {
   "
 
@@ -113,6 +115,7 @@ mm_fit_signatures = function(muts.input,
                            consigts.defn=consigts.defn,
                            sigt.profs=sigt.profs,
                            cos_sim_threshold=cos_sim_threshold,
+                           force_include=force_include,
                            dbg=dbg)
 
   output$estimate <- sigfit
@@ -137,7 +140,8 @@ mm_fit_signatures = function(muts.input,
                                         consigts.defn = consigts.defn,
                                         sigt.profs = sigt.profs,
                                         iterations = iterations,
-                                        cos_sim_threshold = cos_sim_threshold)
+                                        cos_sim_threshold = cos_sim_threshold,
+                                        force_include = force_include)
 
     sigboot <- left_join(sigboot, sig_est, by = c("sample", "signature"))
 

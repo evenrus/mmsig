@@ -136,6 +136,7 @@ sig_out <- mm_fit_signatures(muts.input=mm_5_col_subset,
                              iterations = 20, # 1000 iterations recommended for stable results
                              refcheck=TRUE,
                              cos_sim_threshold = 0.01,
+                             force_include = c("SBS1", "SBS5"),
                              dbg=FALSE) 
 #>   |                                                                              |                                                                      |   0%  |                                                                              |=======================                                               |  33%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================================| 100%
 ```

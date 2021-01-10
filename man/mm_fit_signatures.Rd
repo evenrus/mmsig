@@ -14,6 +14,7 @@ mm_fit_signatures(
   strandbias = FALSE,
   refcheck = TRUE,
   cos_sim_threshold = 0.01,
+  force_include = c("SBS1", "SBS5"),
   dbg = FALSE
 )
 }
@@ -35,6 +36,8 @@ mm_fit_signatures(
 \item{refcheck}{check that input mutational catalog (if vcf-format) is aligned to hg19}
 
 \item{cos_sim_threshold}{cosine similarity threshold below which signatures are removed from the final profile}
+
+\item{force_include}{vector with the names of signatures to always keep in the final profile of every sample}
 
 \item{dbg}{FALSE = silent; TRUE = verbose}
 }

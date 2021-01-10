@@ -4,6 +4,7 @@
 #' @param consigts.defn 96 classes mutational profile for mutational signature reference
 #' @param sigt.profs which signatures to fit for each sample
 #' @param cos_sim_threshold cosine similarity threshold to remove signatures
+#' @param force_include vector with the names of signatures to always keep in the final profile of every sample
 #' @param dbg boolean whether to print or not
 #'
 #' @return estimated mutational signature profile of all samples
@@ -12,6 +13,7 @@ fit_signatures = function(samples.muts,
                           consigts.defn,
                           sigt.profs,
                           cos_sim_threshold,
+                          force_include,
                           dbg=dbg) {
   max.em.iter=2000
   consigt.names <- colnames(consigts.defn)
@@ -50,9 +52,9 @@ fit_signatures = function(samples.muts,
     while (reducing) {
       spat(dbg, "in the while, rem.alpha: ", rem.alpha)
       cosReduction <- NULL
-      rem.names <- setdiff(names(rem.alpha),c("SBS1","SBS5"))
-      if(length(rem.names) == 0){ ## Avoiding script crash when only SBS1 and 5 are present.
-        spit(dbg, "removed all signatures except SBS1 and SBS5: exiting while...")
+      rem.names <- setdiff(names(rem.alpha), force_include)
+      if(length(rem.names) == 0){ ## Avoiding script crash when only the forced signatures are present.
+        spit(dbg, "removed all signatures except forced inclusion: exiting while...")
         break
       }
 

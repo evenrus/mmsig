@@ -4,6 +4,7 @@
 #' @param consigts.defn 96 classes mutational profile for mutational signature reference
 #' @param sigt.profs which signatures to fit for each sample
 #' @param cos_sim_threshold cosine similarity threshold to remove signatures
+#' @param force_include vector with the names of signatures to always keep in the final profile of every sample
 #' @param iterations number of mutational profiles to draw from the multinomial distribution of each sample
 #' @importFrom plyr create_progress_bar
 #' @importFrom plyr progress_text
@@ -15,6 +16,7 @@ bootstrap_fit_signatures <- function(samples.muts,
                                      consigts.defn,
                                      sigt.profs,
                                      cos_sim_threshold,
+                                     force_include,
                                      iterations = 1000){
 
   # Setup
@@ -48,6 +50,7 @@ bootstrap_fit_signatures <- function(samples.muts,
                               consigts.defn=consigts.defn,
                               sigt.profs=sig.prof,
                               cos_sim_threshold=cos_sim_threshold,
+                              force_include=force_include,
                               dbg=FALSE)
 
     mutSigs[[i]] <- sig_out
