@@ -17,6 +17,11 @@ signature fitting and applies cosine similarities for dynamic error
 suppression as well as bootstrapping-based confidence intervals and
 assessment of transcriptional strand bias.
 
+Citation: Rustad, E.H., Nadeu, F., Angelopoulos, N. et al. mmsig: a
+fitting approach to accurately identify somatic mutational signatures in
+hematological malignancies. Commun Biol 4, 424 (2021).
+<https://doi.org/10.1038/s42003-021-01938-0>
+
 ## Installation
 
 You can install the development version from
